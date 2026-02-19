@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LingoQuest - Vocabulary Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --neon-blue: #00f3ff; --neon-purple: #bc13fe; --neon-pink: #ff006e; --neon-green: #0aff0a; --dark-bg: #050508; --glass: rgba(255, 255, 255, 0.03); }
+        body { font-family: 'Rajdhani', sans-serif; background: var(--dark-bg); color: #fff; overflow-x: hidden; min-height: 100vh; }
+        .universe { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); overflow: hidden; }
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)), radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)), radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)); background-size: 200px 200px; animation: sparkle 10s linear infinite; }
+        .nebula { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, var(--neon-purple) 0%, transparent 70%); opacity: 0.15; filter: blur(60px); animation: float 20s ease-in-out infinite; }
+        .nebula:nth-child(2) { background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%); top: 40%; left: 60%; animation-delay: -5s; }
+        @keyframes sparkle { from { transform: translateY(0); } to { transform: translateY(-200px); } }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px rgba(0, 243, 255, 0.5); animation: glow 3s ease-in-out infinite alternate; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .logo i { font-size: 1.5rem; color: var(--neon-blue); -webkit-text-fill-color: var(--neon-blue); }
+        @keyframes glow { from { filter: brightness(1); } to { filter: brightness(1.3); } }
+        .user-stats { display: flex; gap: 20px; align-items: center; }
+        .stat-box { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 15px; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; transition: all 0.3s; }
+        .stat-box:hover { border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 243, 255, 0.3); transform: translateY(-2px); }
+        .stat-icon { font-size: 1.2rem; color: var(--neon-blue); }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-weight: 700; color: var(--neon-blue); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        .tab-btn { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 15px 30px; border-radius: 30px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; transition: all 0.3s; position: relative; overflow: hidden; display: flex; align-items: center; gap: 8px; }
+        .tab-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
+        .tab-btn:hover::before { left: 100%; }
+        .tab-btn.active { background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink)); border-color: transparent; box-shadow: 0 0 30px rgba(188, 19, 254, 0.5); }
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .login-container { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 50px; max-width: 450px; width: 100%; text-align: center; backdrop-filter: blur(20px); }
+        .login-box h2 { font-family: 'Orbitron', sans-serif; font-size: 2rem; margin-bottom: 10px; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group input { width: 100%; padding: 15px 20px; border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; background: rgba(0,0,0,0.3); color: #fff; font-size: 1rem; font-family: 'Rajdhani', sans-serif; transition: all 0.3s; }
+        .input-group input:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); }
+        .units-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .unit-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; position: relative; overflow: hidden; cursor: pointer; transition: all 0.4s; backdrop-filter: blur(10px); }
+        .unit-card:hover { border-color: var(--neon-blue); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,243,255,0.2); }
+        .unit-number { font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; color: rgba(255,255,255,0.1); position: absolute; top: 10px; right: 20px; }
+        .unit-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; background: linear-gradient(45deg, #fff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .quiz-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .mode-card { background: linear-gradient(135deg, rgba(0,243,255,0.1), rgba(188,19,254,0.1)); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .mode-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--neon-blue); box-shadow: 0 20px 40px rgba(0,243,255,0.2); }
+        .mode-icon { font-size: 2.5rem; margin-bottom: 15px; display: block; color: var(--neon-blue); }
+        .mode-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 10px; color: var(--neon-blue); }
+        .quiz-container { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 40px; max-width: 800px; margin: 0 auto; backdrop-filter: blur(20px); }
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .question-counter { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--neon-blue); }
+        .timer { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 700; color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); }
+        .question-card { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 40px; margin-bottom: 30px; text-align: center; }
+        .question-word { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; margin-bottom: 10px; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .option-btn { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); color: #fff; padding: 20px; border-radius: 15px; cursor: pointer; font-size: 1.1rem; transition: all 0.3s; }
+        .option-btn:hover:not(.disabled) { background: rgba(0,243,255,0.1); border-color: var(--neon-blue); }
+        .option-btn.correct { background: rgba(10, 255, 10, 0.2); border-color: var(--neon-green); }
+        .option-btn.wrong { background: rgba(255, 0, 110, 0.2); border-color: var(--neon-pink); animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .option-btn.disabled { pointer-events: none; opacity: 0.7; }
+        .writer-input { width: 100%; padding: 20px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.2); border-radius: 15px; background: rgba(0,0,0,0.3); color: #fff; text-align: center; font-family: 'Rajdhani', sans-serif; }
+        .writer-input:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); }
+        .correct-answer-display { margin-top: 20px; padding: 20px; background: rgba(255, 0, 110, 0.1); border: 1px solid var(--neon-pink); border-radius: 15px; display: none; }
+        .correct-answer-display.show { display: block; }
+        .streak-container { position: fixed; top: 100px; right: 20px; background: linear-gradient(135deg, rgba(255,0,110,0.2), rgba(255,140,0,0.2)); border: 1px solid var(--neon-pink); padding: 15px 25px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-family: 'Orbitron', sans-serif; transform: translateX(150%); transition: transform 0.5s; z-index: 50; }
+        .streak-container.show { transform: translateX(0); }
+        .xp-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(135deg, var(--neon-green), #00ff88); color: #000; padding: 20px 40px; border-radius: 50px; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem; z-index: 1000; opacity: 0; transition: all 0.5s; }
+        .xp-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .result-score { font-family: 'Orbitron', sans-serif; font-size: 5rem; font-weight: 900; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 20px 0; }
+        .action-btns { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .btn-primary { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); border: none; color: #fff; padding: 15px 40px; border-radius: 30px; font-family: 'Orbitron', sans-serif; font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,243,255,0.4); }
+        .btn-secondary { background: transparent; border: 2px solid var(--neon-purple); color: #fff; padding: 15px 40px; border-radius: 30px; font-family: 'Orbitron', sans-serif; font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+        .btn-secondary:hover { background: var(--neon-purple); transform: translateY(-3px); }
+        .activity-list { max-height: 400px; overflow-y: auto; }
+        .activity-item { padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--neon-blue); cursor: pointer; transition: all 0.3s; }
+        .activity-item:hover { background: rgba(0,0,0,0.5); transform: translateX(5px); }
+        .delete-btn { background: rgba(255, 0, 110, 0.2); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s; margin-left: 10px; }
+        .delete-btn:hover { background: var(--neon-pink); color: #fff; transform: scale(1.1); }
+        .activity-content { display: flex; justify-content: space-between; align-items: center; }
+        .activity-left { display: flex; flex-direction: column; }
+        .activity-right { display: flex; align-items: center; gap: 10px; }
+        .word-list { display: grid; gap: 15px; max-height: 60vh; overflow-y: auto; }
+        .word-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .word-en { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: var(--neon-blue); }
+        .achievement { position: fixed; top: 100px; left: 20px; background: linear-gradient(135deg, gold, orange); color: #000; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; transform: translateX(-150%); transition: transform 0.5s; z-index: 100; }
+        .achievement.show { transform: translateX(0); }
+        .achievements-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .achievement-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; text-align: center; }
+        .achievement-card.unlocked { background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,140,0,0.1)); border-color: gold; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--glass); border: 1px solid var(--neon-blue); border-radius: 30px; padding: 40px; max-width: 500px; width: 100%; text-align: center; backdrop-filter: blur(20px); }
+        .unit-select-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px; margin: 20px 0; }
+        .unit-select-btn { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 15px 10px; border-radius: 10px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; }
+        .unit-select-btn:hover { border-color: var(--neon-blue); background: rgba(0,243,255,0.1); transform: scale(1.05); }
+        .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark-bg); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .loader.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        .loader-text { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: var(--neon-blue); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
+        @media (max-width: 768px) { .options-grid { grid-template-columns: 1fr; } .activity-content { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <div class="loader" id="loader"><div class="loader-text"><i class="fas fa-bolt"></i> SİSTEM YÜKLƏNİR...</div></div>
+    <div class="universe"><div class="stars"></div><div class="nebula" style="top: 20%; left: 20%;"></div><div class="nebula"></div></div>
+    <div class="streak-container" id="streakContainer"><i class="fas fa-fire" style="color:orange"></i><span id="streakCount">5</span> Səhvəsiz!</div>
+    <div class="achievement" id="achievement"><div class="achievement-icon"><i class="fas fa-trophy"></i></div><div class="achievement-text"><h4>Yeni Nailiyyət!</h4><p id="achievementText">First Blood</p></div></div>
+    <div class="xp-toast" id="xpToast">+50 XP</div>
+
+    <div id="login" class="section active">
+        <div class="login-container">
+            <div class="login-box">
+                <i class="fas fa-bolt" style="font-size: 3rem; color: var(--neon-blue); margin-bottom: 20px;"></i>
+                <h2>LingoQuest</h2>
+                <p style="opacity:0.7;margin-bottom:30px">Söz biliklərinizi inkişaf etdirin</p>
+                <div class="input-group">
+                    <label><i class="fas fa-user"></i> Oyunçu adınız</label>
+                    <input type="text" id="playerNameInput" placeholder="Adınızı daxil edin" maxlength="20">
+                </div>
+                <button class="btn-primary" onclick="login()" style="width: 100%;"><i class="fas fa-play"></i> Başla</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainApp" style="display: none;">
+        <header class="header">
+            <div class="logo" onclick="showSection('home')"><i class="fas fa-bolt"></i> LINGOQUEST</div>
+            <div class="user-stats">
+                <div class="stat-box"><i class="fas fa-gem stat-icon"></i><div><div style="font-size:0.8rem;opacity:0.7">Səviyyə</div><div class="stat-value" id="userLevel">1</div></div></div>
+                <div class="stat-box"><i class="fas fa-bolt stat-icon"></i><div><div style="font-size:0.8rem;opacity:0.7">XP</div><div class="stat-value" id="userXP">0</div></div></div>
+                <div class="stat-box" style="cursor:pointer" onclick="showSection('home')"><i class="fas fa-user stat-icon"></i><div><div style="font-size:0.8rem;opacity:0.7">Oyunçu</div><div class="stat-value" id="playerNameDisplay" style="font-size:0.9rem">-</div></div></div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="showSection('home')"><i class="fas fa-home"></i> Əsas</button>
+                <button class="tab-btn" onclick="showSection('units')"><i class="fas fa-book"></i> Unitlər</button>
+                <button class="tab-btn" onclick="showSection('achievements')"><i class="fas fa-trophy"></i> Nailiyyətlər</button>
+            </div>
+
+            <div id="home" class="section active">
+                <h2 style="font-family:'Orbitron',sans-serif;margin-bottom:30px;text-align:center"><i class="fas fa-gamepad"></i> Oyun Rejimini Seç</h2>
+                <div class="quiz-modes">
+                    <div class="mode-card" onclick="showSection('units')"><i class="fas fa-bullseye mode-icon"></i><div class="mode-title">Klassik Quiz</div><div style="color:rgba(255,255,255,0.7);font-size:0.9rem">Söz biliklərinizi test edin</div></div>
+                    <div class="mode-card" onclick="selectUnitForMode('survival')"><i class="fas fa-fire mode-icon"></i><div class="mode-title">Sağqalma</div><div style="color:rgba(255,255,255,0.7);font-size:0.9rem">1 səhv = Oyun bitdi. Unit seç!</div></div>
+                    <div class="mode-card" onclick="selectUnitForMode('writer')"><i class="fas fa-pen mode-icon"></i><div class="mode-title">Yazıçı</div><div style="color:rgba(255,255,255,0.7);font-size:0.9rem">Sözləri düzgün yaz. Unit seç!</div></div>
+                </div>
+                <div style="background:var(--glass);border-radius:20px;padding:30px;margin-top:30px">
+                    <h3 style="font-family:'Orbitron',sans-serif;margin-bottom:20px;color:var(--neon-blue)"><i class="fas fa-history"></i> Son Aktivlik</h3>
+                    <div class="activity-list" id="activityList"><p style="opacity:0.6;text-align:center">Hələ heç bir aktivlik yoxdur. İlk quizinizi başladın!</p></div>
+                </div>
+            </div>
+
+            <div id="units" class="section">
+                <h2 style="font-family:'Orbitron',sans-serif;margin-bottom:30px;text-align:center"><i class="fas fa-book-open"></i> Unit Seçin</h2>
+                <div class="units-grid" id="unitsGrid"></div>
+            </div>
+
+            <div id="learn" class="section">
+                <div class="quiz-container">
+                    <div class="quiz-header">
+                        <div class="question-counter"><i class="fas fa-graduation-cap"></i> <span id="learnUnitTitle">Unit 1</span></div>
+                        <button class="btn-secondary" onclick="showSection('units')" style="padding:10px 20px"><i class="fas fa-arrow-left"></i> Geri</button>
+                    </div>
+                    <div class="word-list" id="wordList"></div>
+                </div>
+            </div>
+
+            <div id="quiz" class="section">
+                <div class="quiz-container">
+                    <div class="quiz-header">
+                        <div class="question-counter">Sual <span id="currentQ">1</span>/<span id="totalQ">10</span></div>
+                        <div class="timer" id="timer">15</div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-word" id="questionWord">Loading...</div>
+                        <div style="color:rgba(255,255,255,0.5);font-size:0.9rem;text-transform:uppercase;letter-spacing:2px" id="questionType">AZ → EN</div>
+                    </div>
+                    <div class="options-grid" id="optionsGrid"></div>
+                    <div style="margin-top:30px;text-align:center"><button class="btn-secondary" onclick="exitQuiz()"><i class="fas fa-times"></i> Çıxış</button></div>
+                </div>
+            </div>
+
+            <div id="writerQuiz" class="section">
+                <div class="quiz-container">
+                    <div class="quiz-header">
+                        <div class="question-counter">Sual <span id="writerCurrentQ">1</span>/<span id="writerTotalQ">10</span></div>
+                        <div class="timer" id="writerTimer">15</div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-word" id="writerQuestionWord">Loading...</div>
+                        <div style="color:rgba(255,255,255,0.5);font-size:0.9rem" id="writerQuestionType">AZ → EN (yazın)</div>
+                    </div>
+                    <div style="margin-top:20px">
+                        <input type="text" class="writer-input" id="writerInput" placeholder="Cavabınızı yazın..." autocomplete="off">
+                        <button class="btn-primary" onclick="checkWriterAnswer()" style="margin-top:15px;width:100%;padding:15px"><i class="fas fa-check"></i> Təsdiqlə</button>
+                    </div>
+                    <div class="correct-answer-display" id="correctAnswerDisplay">
+                        <div style="color:var(--neon-pink);font-size:0.9rem;margin-bottom:5px"><i class="fas fa-times-circle"></i> Səhv! Düzgün cavab:</div>
+                        <div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--neon-green)" id="correctAnswerText"></div>
+                    </div>
+                    <div style="margin-top:30px;text-align:center"><button class="btn-secondary" onclick="exitQuiz()"><i class="fas fa-times"></i> Çıxış</button></div>
+                </div>
+            </div>
+
+            <div id="results" class="section">
+                <div class="quiz-container">
+                    <div style="text-align:center;padding:40px">
+                        <h2 style="font-family:'Orbitron',sans-serif;color:var(--neon-blue)"><i class="fas fa-flag-checkered"></i> Quiz Tamamlandı!</h2>
+                        <div class="result-score" id="finalScore">85%</div>
+                        <div style="font-size:3rem;margin:20px 0;letter-spacing:10px" id="resultStars">⭐⭐⭐</div>
+                        <div style="font-size:1.5rem;color:rgba(255,255,255,0.8);margin-bottom:30px" id="resultMessage">Əla iş!</div>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:30px 0">
+                            <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:15px"><div style="font-size:2rem;color:var(--neon-green)" id="correctCount">8</div><div style="opacity:0.7">Düzgün</div></div>
+                            <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:15px"><div style="font-size:2rem;color:var(--neon-pink)" id="wrongCount">2</div><div style="opacity:0.7">Səhv</div></div>
+                            <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:15px"><div style="font-size:2rem;color:var(--neon-blue)" id="earnedXP">+120</div><div style="opacity:0.7">Qazanılan XP</div></div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="btn-primary" onclick="restartQuiz()"><i class="fas fa-redo"></i> Təkrar Oyna</button>
+                            <button class="btn-secondary" onclick="showSection('units')"><i class="fas fa-book"></i> Başqa Unit</button>
+                            <button class="btn-secondary" onclick="showSection('home')"><i class="fas fa-home"></i> Əsas Səhifə</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="achievements" class="section">
+                <h2 style="font-family:'Orbitron',sans-serif;margin-bottom:30px;text-align:center"><i class="fas fa-trophy"></i> Nailiyyətlər</h2>
+                <div class="achievements-grid" id="achievementsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+alert("LingoQuest hele develop asamasindadi, her hasnisa sehv soz ve ya elave etmek istediyiniz luget varsa ve ya her hasnisa sehvlik varsa zehmet olmasa bildirin +994 70 600 96 03");
+const vocabularyData = {
+    1: [{en:"accept",az:"qəbul etmək",type:"v"},{en:"aim",az:"məqsəd; nişan almaq",type:"n/v"},{en:"confuse",az:"çaşdırmaq",type:"v"},{en:"blame",az:"günahlandırmaq",type:"v"},{en:"defeat",az:"məğlub etmək",type:"v"},{en:"necessary",az:"vacib, lazımi",type:"adj"},{en:"narrow",az:"dar",type:"adj"},{en:"opponent",az:"rəqib",type:"n"},{en:"sailor",az:"dənizçi",type:"n"},{en:"advise",az:"məsləhət vermək",type:"v"},{en:"advice",az:"məsləhət",type:"n"},{en:"shy",az:"utancaq",type:"adj"},{en:"anxious",az:"narahat",type:"adj"},{en:"impede",az:"mane olmaq",type:"v"},{en:"forbid",az:"qadağan etmək",type:"v"},{en:"march",az:"mart; addımlamaq",type:"n/v"},{en:"liberate",az:"azad etmək",type:"v"},{en:"sacrifice",az:"qurban; qurban vermək",type:"n/v"},{en:"trust",az:"inanmaq, güvənmək",type:"v"},{en:"boast",az:"lovğalanmaq",type:"v"},{en:"sincere",az:"səmimi",type:"adj"},{en:"crowded",az:"izdihamlı, basabas",type:"adj"},{en:"genius",az:"dahi",type:"n"},{en:"tailor",az:"dərzi",type:"n"},{en:"surgeon",az:"cərrah",type:"n"},{en:"idle",az:"tənbəl, avara",type:"adj"},{en:"stout",az:"kök, şişman",type:"adj"},{en:"sour",az:"turş",type:"adj"},{en:"noble",az:"alicənab",type:"adj"},{en:"scold",az:"danlamaq",type:"v"}],
+    2: [{en:"sleep",az:"yatmaq; yuxulu",type:"v/adj"},{en:"fall asleep",az:"yuxuya getmək",type:"v"},{en:"generous",az:"əli açıq, cömərt",type:"adj"},{en:"refuse",az:"etiraz etmək, imtina etmək",type:"v"},{en:"resist",az:"dirənmək, müqavimət göstərmək",type:"v"},{en:"interrupt",az:"sözünü kəsmək",type:"v"},{en:"escape",az:"xilas olmaq",type:"v"},{en:"deliver",az:"çatdırmaq",type:"v"},{en:"contest",az:"yarış, müsabiqə",type:"n"},{en:"follow",az:"izləmək, ardınca getmək",type:"v"},{en:"reptile",az:"sürüngən",type:"n"},{en:"prevent",az:"qarşısını almaq, əngəlləmək",type:"v"},{en:"oblige",az:"məcbur etmək",type:"v"},{en:"prefer",az:"üstün tutmaq, tərcih etmək",type:"v"},{en:"repeat",az:"təkrar; təkrarlamaq",type:"n/v"},{en:"rise",az:"qalxmaq",type:"v"},{en:"raise",az:"qaldırmaq",type:"v"},{en:"sew",az:"tikmək (geyim)",type:"v"},{en:"bear",az:"dözmək",type:"v"},{en:"settle",az:"məskunlaşmaq",type:"v"},{en:"inhabitant",az:"sakin",type:"n"},{en:"artist",az:"rəssam",type:"n"},{en:"ring",az:"üzük; zəng vurmaq; rinq",type:"n/v"},{en:"remember",az:"xatırlamaq",type:"v"},{en:"remind",az:"xatırlatmaq",type:"v"},{en:"promise",az:"söz, vəd; söz vermək",type:"n/v"},{en:"permit",az:"icazə vermək",type:"v"},{en:"betray",az:"xəyanət etmək",type:"v"},{en:"pass away",az:"ölmək, rəhmətə getmək",type:"v"},{en:"wood",az:"taxta; meşə",type:"n"}],
+    3: [{en:"struggle",az:"mübarizə; mübarizə aparmaq",type:"n/v"},{en:"sharpen",az:"itiləmək",type:"v"},{en:"reject",az:"rədd etmək",type:"v"},{en:"brave",az:"cəsur",type:"adj"},{en:"custom",az:"adət",type:"n"},{en:"next to",az:"yanında",type:"prep"},{en:"similar",az:"oxşar",type:"adj"},{en:"enormous",az:"nəhəng",type:"adj"},{en:"waste",az:"israf; israf etmək",type:"n/v"},{en:"watch",az:"qol saatı; izləmək",type:"n/v"},{en:"train",az:"qatar; məşq keçmək",type:"n/v"},{en:"ruin",az:"dağıntı; dağıtmaq",type:"n/v"},{en:"blind",az:"kor",type:"adj"},{en:"lonely",az:"tənha",type:"adj"},{en:"coward",az:"qorxaq",type:"n"},{en:"ill",az:"xəstə",type:"adj"},{en:"illness",az:"xəstəlik",type:"n"},{en:"propose",az:"təklif etmək",type:"v"},{en:"repair",az:"təmir etmək",type:"v"},{en:"proclaim",az:"elan etmək",type:"v"},{en:"rent",az:"kirayə; kirayə vermək",type:"n/v"},{en:"retire",az:"təqaüdə çıxmaq",type:"v"},{en:"knit",az:"toxumaq",type:"v"},{en:"preserve",az:"qoruyub saxlamaq",type:"v"},{en:"punish",az:"cəzalandırmaq",type:"v"},{en:"pull",az:"dartmaq, çəkmək",type:"v"},{en:"push",az:"itələmək",type:"v"},{en:"reduce",az:"azaltmaq",type:"v"},{en:"close",az:"yaxın; bağlamaq",type:"adj/v"},{en:"enemy",az:"düşmən",type:"n"}],
+    4: [{en:"fear",az:"qorxu; qorxaq; qorxu verən",type:"n/adj"},{en:"mud",az:"palçıq; palçıqlı",type:"n/adj"},{en:"chalk",az:"təbaşir",type:"n"},{en:"steal",az:"oğurlamaq",type:"v"},{en:"reply",az:"cavab; cavab vermək",type:"n/v"},{en:"pray",az:"dua; dua etmək",type:"n/v"},{en:"prey",az:"ov, yem; ovlamaq",type:"n/v"},{en:"greet",az:"salamlamaq",type:"v"},{en:"explode",az:"partlamaq, partlatmaq",type:"v"},{en:"convince",az:"inandırmaq",type:"v"},{en:"deny",az:"inkar etmək",type:"v"},{en:"luck",az:"bəxt, şans; uğurlu",type:"n/adj"},{en:"frank",az:"səmimi",type:"adj"},{en:"stop",az:"dayanacaq; dayanmaq",type:"n/v"},{en:"suppose",az:"zənn etmək, fərz etmək",type:"v"},{en:"tie",az:"əlaqə; qalstuk; bağlamaq",type:"n/v"},{en:"murder",az:"qətl; öldürmək; qatil",type:"n/v"},{en:"poison",az:"zəhər; zəhərləmək",type:"n/v"},{en:"lie",az:"yalan; yalan danışmaq; uzanmaq",type:"n/v"},{en:"dine",az:"nahar etmək",type:"v"},{en:"demand",az:"tələb; tələb etmək",type:"n/v"},{en:"border",az:"sərhəd; həmsərhəd olmaq",type:"n/v"},{en:"compile",az:"tərtib etmək",type:"v"},{en:"envy",az:"paxıllıq; paxıllıq etmək; paxıl",type:"n/v/adj"},{en:"tiny",az:"balaca, kiçicik",type:"adj"},{en:"urgent",az:"təcili",type:"adj"},{en:"upset",az:"məyus; keyfini qaçırmaq",type:"adj/v"},{en:"cook",az:"aşbaz; bişirmək",type:"n/v"},{en:"take part",az:"iştirak etmək",type:"v"}],
+    5: [{en:"declare",az:"elan etmək",type:"v"},{en:"explain",az:"izah etmək",type:"v"},{en:"heat",az:"istilik; isitmək",type:"n/v"},{en:"borrow",az:"borc almaq",type:"v"},{en:"lend",az:"borc vermək",type:"v"},{en:"obey",az:"itaət etmək",type:"v"},{en:"possess",az:"malik olmaq, sahib olmaq",type:"v"},{en:"carpet",az:"xalça",type:"n"},{en:"brave",az:"cəsur",type:"adj"},{en:"dense",az:"sıx",type:"adj"},{en:"dye",az:"boyamaq",type:"v"},{en:"learn",az:"öyrənmək",type:"v"},{en:"teach",az:"öyrətmək; müəllim",type:"v/n"},{en:"peel",az:"soymaq",type:"v"},{en:"praise",az:"tərif; tərifləmək",type:"n/v"},{en:"urgent",az:"təcili, vacib",type:"adj"},{en:"neat",az:"səliqəli",type:"adj"},{en:"skyscraper",az:"göydələn",type:"n"},{en:"porter",az:"yük daşıyan",type:"n"},{en:"rob",az:"oğurlamaq; oğru",type:"v/n"},{en:"at once",az:"dərhal",type:"adv"},{en:"rule",az:"idarə etmək; hökmdar; xətkeş",type:"v/n"},{en:"speak",az:"danışmaq",type:"v"},{en:"trade",az:"ticarət; ticarət etmək",type:"n/v"},{en:"survive",az:"sağ qalmaq",type:"v"},{en:"refer",az:"istinad etmək",type:"v"},{en:"quarrel",az:"mübahisə; mübahisə etmək",type:"n/v"},{en:"require",az:"ehtiyacı olmaq; tələb etmək",type:"v"},{en:"serve",az:"xidmət etmək; qulluqçu",type:"v/n"},{en:"foreign",az:"xarici; əcnəbi",type:"adj/n"}],
+    6: [{en:"quiet",az:"sakit",type:"adj"},{en:"quite",az:"çox, olduqca",type:"adv"},{en:"greedy",az:"xəsis",type:"adj"},{en:"contemporary",az:"müasir",type:"adj"},{en:"dozen",az:"on ikilik",type:"n"},{en:"slave",az:"qul",type:"n"},{en:"income",az:"gəlir",type:"n"},{en:"various",az:"fərqli, müxtəlif",type:"adj"},{en:"bride",az:"gəlin",type:"n"},{en:"groom",az:"bəy",type:"n"},{en:"gift",az:"hədiyyə",type:"n"},{en:"temple",az:"məbəd",type:"n"},{en:"time",az:"vaxt; dəfə",type:"n"},{en:"dangerous",az:"təhlükəli",type:"adj"},{en:"harm",az:"ziyan; ziyan vurmaq",type:"n/v"},{en:"harmful",az:"ziyanlı",type:"adj"},{en:"explore",az:"kəşf etmək",type:"v"},{en:"man-made",az:"süni",type:"adj"},{en:"dirty",az:"çirkli",type:"adj"},{en:"clean",az:"təmiz; təmizləmək",type:"adj/v"},{en:"sweep",az:"süpürmək",type:"v"},{en:"evidence",az:"sübut",type:"n"},{en:"because",az:"çünki",type:"conj"},{en:"as",az:"kimi",type:"prep"},{en:"whenever",az:"nə zaman olursa",type:"adv"},{en:"cause",az:"səbəb; səbəb olmaq",type:"n/v"},{en:"trash",az:"zibil, tullantı",type:"n"},{en:"smooth",az:"hamar",type:"adj"},{en:"precious",az:"dəyərli, qiymətli",type:"adj"},{en:"treasure",az:"xəzinə",type:"n"}],
+    p1: [{en:"ancient",az:"qədim, köhnə",type:"adj"},{en:"impact",az:"təsir, zərbə",type:"n"},{en:"master",az:"ustad; mənimsəmək",type:"n/v"},{en:"improve",az:"yaxşılaşdırmaq",type:"v"},{en:"scientist",az:"alim",type:"n"},{en:"behavior",az:"davranış",type:"n"},{en:"ban",az:"qadağa; qadağan etmək",type:"n/v"},{en:"prove",az:"sübut etmək",type:"v"},{en:"reduce",az:"azaltmaq",type:"v"},{en:"relieve",az:"yüngülləşdirmək",type:"v"},{en:"injury",az:"zədə, xəsarət",type:"n"},{en:"as well",az:"həmçinin",type:"adv"},{en:"damage",az:"ziyan; zədələmək",type:"n/v"},{en:"to be fond of",az:"xoşlamaq, sevmək",type:"phrase"},{en:"ability",az:"qabiliyyət",type:"n"},{en:"lose",az:"itirmək",type:"v"},{en:"cure",az:"sağaltmaq; müalicə",type:"v/n"},{en:"differ",az:"fərqlənmək",type:"v"},{en:"about",az:"haqqında; təxminən",type:"prep/adv"},{en:"heal",az:"sağaltmaq",type:"v"},{en:"both...and",az:"həm..., həm də",type:"conj"},{en:"evidence",az:"sübut, dəlil",type:"n"},{en:"prohibit",az:"qadağan etmək",type:"v"},{en:"attitude",az:"münasibət",type:"n"},{en:"increase",az:"artırmaq",type:"v/n"},{en:"complete",az:"tam; tamamlamaq",type:"adj/v"},{en:"according to",az:"-ə görə",type:"prep"},{en:"vary",az:"dəyişmək",type:"v"},{en:"certain",az:"müəyyən; əmin",type:"adj"},{en:"various",az:"müxtəlif",type:"adj"},{en:"loss",az:"itki, zərər",type:"n"},{en:"because",az:"çünki",type:"conj"},{en:"harmful",az:"zərərli",type:"adj"},{en:"pain",az:"ağrı",type:"n"}],
+    p2: [{en:"tradition",az:"ənənə",type:"n"},{en:"inherit",az:"miras almaq",type:"v"},{en:"take care of",az:"qayğısına qalmaq",type:"phrase"},{en:"rock",az:"qaya; yelləmək",type:"n/v"},{en:"spirit",az:"ruh",type:"n"},{en:"preserve",az:"qorumaq, saxlamaq",type:"v"},{en:"benefit",az:"fayda; faydalanmaq",type:"n/v"},{en:"ceremony",az:"mərasim",type:"n"},{en:"snake",az:"ilan",type:"n"},{en:"religion",az:"din",type:"n"},{en:"tribe",az:"qəbilə",type:"n"},{en:"device",az:"cihaz",type:"n"},{en:"contemporary",az:"müasir",type:"adj"},{en:"mainly",az:"əsasən",type:"adv"},{en:"sacred",az:"müqəddəs",type:"adj"},{en:"humid",az:"rütubətli",type:"adj"},{en:"though",az:"baxmayaraq ki",type:"conj"},{en:"goat",az:"keçi",type:"n"},{en:"ancestor",az:"əcdad",type:"n"},{en:"native",az:"yerli",type:"adj/n"},{en:"traditional",az:"ənənəvi",type:"adj"},{en:"part",az:"hissə; iştirak etmək",type:"n/v"},{en:"demonstrate",az:"nümayiş etdirmək",type:"v"},{en:"usage",az:"istifadə",type:"n"},{en:"generation",az:"nəsil",type:"n"},{en:"entire",az:"bütün, tam",type:"adj"}],
+    p3: [{en:"historical",az:"tarixi",type:"adj"},{en:"temple",az:"məbəd",type:"n"},{en:"surround",az:"əhatə etmək",type:"v"},{en:"worshipper",az:"ibadət edən",type:"n"},{en:"majority",az:"əksəriyyət",type:"n"},{en:"holy place",az:"müqəddəs yer",type:"n"},{en:"destroy",az:"dağıtmaq, məhv etmək",type:"v"},{en:"century",az:"əsr",type:"n"},{en:"construction",az:"tikinti",type:"n"},{en:"appearance",az:"görünüş",type:"n"},{en:"movement",az:"hərəkət",type:"n"},{en:"surface",az:"səth",type:"n"},{en:"well",az:"quyu",type:"n"},{en:"deep hole",az:"dərin çuxur",type:"n"},{en:"burnt",az:"yandırılmış",type:"adj"},{en:"sacred fire",az:"müqəddəs od",type:"n"},{en:"nowadays",az:"bu günlərdə",type:"adv"},{en:"attract",az:"cəlb etmək",type:"v"},{en:"artificial",az:"süni",type:"adj"},{en:"trader",az:"ticarətçi",type:"n"},{en:"definition",az:"tərif",type:"n"},{en:"effort",az:"səy, cəhd",type:"n"},{en:"acquire",az:"əldə etmək",type:"v"},{en:"encircle",az:"əhatələmək",type:"v"},{en:"decide",az:"qərar vermək",type:"v"},{en:"religious",az:"dini",type:"adj"},{en:"visit",az:"ziyarət etmək",type:"v"},{en:"fit",az:"uyğun gəlmək",type:"v"},{en:"ceremonial",az:"mərasimlə bağlı",type:"adj"},{en:"open",az:"açmaq",type:"v"}],
+    p4: [{en:"thousand",az:"min",type:"n"},{en:"year",az:"il",type:"n"},{en:"ago",az:"əvvəl",type:"adv"},{en:"know",az:"tanımaq, bilmək",type:"v"},{en:"powerful",az:"güclü",type:"adj"},{en:"afraid",az:"qorxmuş",type:"adj"},{en:"include",az:"daxil etmək",type:"v"},{en:"farmer",az:"fermer",type:"n"},{en:"fisherman",az:"balıqçı",type:"n"},{en:"place",az:"yer",type:"n"},{en:"live",az:"yaşamaq",type:"v"},{en:"easy",az:"asan",type:"adj"},{en:"grow",az:"becərmək",type:"v"},{en:"plenty",az:"bol, çoxlu",type:"adj"},{en:"good",az:"yaxşı",type:"adj"},{en:"farmland",az:"əkin sahəsi",type:"n"},{en:"try",az:"cəhd etmək",type:"v"},{en:"land",az:"torpaq",type:"n"},{en:"leave",az:"tərk etmək",type:"v"},{en:"home",az:"ev",type:"n"},{en:"search",az:"axtarış",type:"n/v"},{en:"treasure",az:"xəzinə",type:"n"},{en:"adventure",az:"macəra",type:"n"},{en:"begin",az:"başlamaq",type:"v"},{en:"attack",az:"hücum etmək",type:"v"},{en:"town",az:"şəhər",type:"n"},{en:"steal",az:"oğurlamaq",type:"v"},{en:"wealth",az:"sərvət",type:"n"},{en:"sudden",az:"qəfil",type:"adj"},{en:"cruel",az:"qəddar",type:"adj"},{en:"often",az:"tez-tez",type:"adv"},{en:"destroy",az:"dağıtmaq",type:"v"},{en:"burn",az:"yandırmaq",type:"v"},{en:"down",az:"aşağı",type:"adv"},{en:"building",az:"bina",type:"n"},{en:"part",az:"hissə",type:"n"},{en:"fight",az:"döyüşmək",type:"v"},{en:"against",az:"əleyhinə",type:"prep"},{en:"sometimes",az:"bəzən",type:"adv"},{en:"pay",az:"ödəmək",type:"v"},{en:"persuade",az:"inandırmaq",type:"v"},{en:"gradually",az:"tədricən",type:"adv"},{en:"stop",az:"dayandırmaq",type:"v"},{en:"trade",az:"ticarət etmək",type:"v"},{en:"neighbour",az:"qonşu",type:"n"},{en:"today",az:"bu gün",type:"adv"},{en:"peace-loving",az:"sülhpərvər",type:"adj"},{en:"nation",az:"millət",type:"n"}],
+    p5: [{en:"lightning",az:"ildırım",type:"n"},{en:"burning",az:"yanan",type:"adj"},{en:"campfire",az:"düşərgə tonqalı",type:"n"},{en:"provide",az:"təmin etmək",type:"v"},{en:"enough",az:"kifayət qədər",type:"adj"},{en:"heat",az:"istilik",type:"n"},{en:"cause",az:"səbəb olmaq",type:"v"},{en:"quickly",az:"tez",type:"adv"},{en:"change",az:"dəyişmək",type:"v"},{en:"direction",az:"istiqamət",type:"n"},{en:"jump",az:"tullanmaq",type:"v"},{en:"road",az:"yol",type:"n"},{en:"move",az:"hərəkət etmək",type:"v"},{en:"enormous",az:"nəhəng",type:"adj"},{en:"destructive",az:"dağıdıcı",type:"adj"},{en:"drought",az:"quraqlıq",type:"n"},{en:"strong",az:"güclü",type:"adj"},{en:"spread",az:"yaymaq",type:"v"},{en:"control",az:"idarə etmək",type:"v"},{en:"firebreak",az:"yanğın zolağı",type:"n"},{en:"clear",az:"təmizləmək",type:"v"},{en:"ahead",az:"qabaqda",type:"adv"},{en:"progress",az:"irəliləyiş",type:"n"},{en:"reach",az:"çatmaq",type:"v"},{en:"airplane",az:"təyyarə",type:"n"},{en:"drop",az:"tökmək",type:"v"},{en:"chemical",az:"kimyəvi maddə",type:"n"},{en:"stage",az:"mərhələ",type:"n"},{en:"discover",az:"kəşf etmək",type:"v"},{en:"detect",az:"aşkar etmək",type:"v"},{en:"statement",az:"bəyanat",type:"n"},{en:"fierce",az:"şiddətli",type:"adj"},{en:"negative",az:"mənfi",type:"adj"},{en:"naturally",az:"təbii olaraq",type:"adv"},{en:"type",az:"növ",type:"n"},{en:"thunder",az:"göy gurultusu",type:"n"},{en:"ray",az:"şüa",type:"n"},{en:"size",az:"ölçü",type:"n"},{en:"humidity",az:"rütubət",type:"n"},{en:"period",az:"müddət",type:"n"},{en:"huge",az:"nəhəng",type:"adj"},{en:"meaning",az:"məna",type:"n"},{en:"different",az:"fərqli",type:"adj"},{en:"structure",az:"quruluş",type:"n"},{en:"difficult",az:"çətin",type:"adj"},{en:"spreading",az:"yayılma",type:"n"}],
+    p6: [{en:"invention",az:"ixtira",type:"n"},{en:"postage stamp",az:"poçt markası",type:"n"},{en:"sender",az:"göndərən",type:"n"},{en:"pay",az:"ödəmək",type:"v"},{en:"travel",az:"səyahət etmək",type:"v"},{en:"cross",az:"keçmək",type:"v"},{en:"worse",az:"daha pis",type:"adj"},{en:"create",az:"yaratmaq",type:"v"},{en:"uniform",az:"vahid",type:"adj"},{en:"rate",az:"tarif",type:"n"},{en:"charge",az:"haqq",type:"n"},{en:"weight",az:"çəki",type:"n"},{en:"rather than",az:"əvəzinə",type:"phrase"},{en:"popular",az:"məşhur",type:"adj"},{en:"immediately",az:"dərhal",type:"adv"},{en:"collector",az:"kolleksiyaçı",type:"n"},{en:"problem",az:"problem",type:"n"},{en:"settle",az:"həll etmək",type:"v"},{en:"expensive",az:"bahalı",type:"adj"},{en:"prefer",az:"üstün tutmaq",type:"v"},{en:"wait",az:"gözləmək",type:"v"},{en:"react",az:"reaksiya vermək",type:"v"},{en:"produce",az:"istehsal etmək",type:"v"},{en:"goods",az:"mallar",type:"n"},{en:"parcel",az:"bağlama",type:"n"},{en:"place of work",az:"iş yeri",type:"n"}],
+    p7: [{en:"pedagogue",az:"pedaqoq",type:"n"},{en:"scientist",az:"alim",type:"n"},{en:"primary",az:"ibtidai",type:"adj"},{en:"seminary",az:"seminariya",type:"n"},{en:"realise",az:"anlamaq",type:"v"},{en:"experience",az:"təcrübə",type:"n"},{en:"native",az:"yerli",type:"adj"},{en:"continue",az:"davam etmək",type:"v"},{en:"faculty",az:"fakültə",type:"n"},{en:"prosperous",az:"uğurlu",type:"adj"},{en:"textbook",az:"dərslik",type:"n"},{en:"encourage",az:"həvəsləndirmək",type:"v"},{en:"donate",az:"ianə etmək",type:"v"},{en:"collect",az:"toplamaq",type:"v"},{en:"fulfil",az:"yerinə yetirmək",type:"v"},{en:"founder",az:"qurucu",type:"n"},{en:"author",az:"müəllif",type:"n"},{en:"pedagogic",az:"pedaqoji",type:"adj"},{en:"researcher",az:"tədqiqatçı",type:"n"}],
+    p8: [{en:"death",az:"ölüm",type:"n"},{en:"marry",az:"evlənmək",type:"v"},{en:"move",az:"köçmək",type:"v"},{en:"primary education",az:"ibtidai təhsil",type:"n"},{en:"secondary education",az:"orta təhsil",type:"n"},{en:"opportunity",az:"imkan",type:"n"},{en:"education",az:"təhsil",type:"n"},{en:"graduate",az:"məzun olmaq",type:"v"},{en:"institute",az:"institut",type:"n"},{en:"successful",az:"uğurlu",type:"adj"},{en:"take part",az:"iştirak etmək",type:"v"},{en:"establishment",az:"quruluş",type:"n"},{en:"pedagogical",az:"pedaqoji",type:"adj"},{en:"professional",az:"peşəkar",type:"adj"},{en:"training",az:"təlim",type:"n"},{en:"colleague",az:"həmkar",type:"n"},{en:"qualified",az:"ixtisaslı",type:"adj"},{en:"publish",az:"nəşr etmək",type:"v"},{en:"scientific",az:"elmi",type:"adj"},{en:"article",az:"məqalə",type:"n"},{en:"respect",az:"hörmət etmək",type:"v"},{en:"foundation",az:"əsas",type:"n"},{en:"activity",az:"fəaliyyət",type:"n"},{en:"develop",az:"inkişaf etdirmək",type:"v"},{en:"involve",az:"cəlb etmək",type:"v"},{en:"teacher",az:"müəllim",type:"n"},{en:"translate",az:"tərcümə etmək",type:"v"},{en:"organize",az:"təşkil etmək",type:"v"},{en:"particular",az:"xüsusi",type:"adj"}]
+};
+
+const unitNames = {1:"Unit 1 - Sözlər",2:"Unit 2 - Sözlər",3:"Unit 3 - Sözlər",4:"Unit 4 - Sözlər",5:"Unit 5 - Sözlər",6:"Unit 6 - Sözlər",p1:"Toplu 1 - Passage 1",p2:"Toplu 1 - Passage 2",p3:"Toplu 1 - Passage 3",p4:"Toplu 1 - Passage 4",p5:"Toplu 1 - Passage 5",p6:"Toplu 1 - Passage 6",p7:"Toplu 1 - Passage 7",p8:"Toplu 1 - Passage 8"};
+
+let currentUnit=null,currentMode='classic',currentQuestion=0,score=0,streak=0,maxStreak=0,timer=null,timeLeft=15,questions=[],quizStartIndex=0,quizEndIndex=0,activityHistory=[],selectedModeForUnit=null;
+let userData={name:'',level:1,xp:0,totalCorrect:0,totalAnswered:0,achievements:[],activityHistory:[]};
+const achievements=[{id:1,name:"İlk Addım",desc:"İlk quizini tamamla",icon:"fa-flag-checkered",unlocked:false},{id:2,name:"Zəka Fəvvarəsi",desc:"10 səhvəsiz cavab ver",icon:"fa-fire",unlocked:false},{id:3,name:"Yazıçı",desc:"Yazıçı rejimində 10 söz yaz",icon:"fa-pen",unlocked:false},{id:4,name:"Bilik Aşiqi",desc:"Bütün unitləri tamamla",icon:"fa-book",unlocked:false},{id:5,name:"Sağqalan",desc:"Sağqalma rejimində 20 xal yığ",icon:"fa-heart",unlocked:false}];
+
+window.onload=function(){setTimeout(()=>document.getElementById('loader').classList.add('hidden'),1500);loadUserData();if(userData.name)showMainApp();renderUnits();renderAchievements();updateUserStats();renderActivityHistory();document.getElementById('writerInput')?.addEventListener('keypress',e=>{if(e.key==='Enter')checkWriterAnswer()});document.getElementById('playerNameInput')?.addEventListener('keypress',e=>{if(e.key==='Enter')login()})};
+
+function login(){const n=document.getElementById('playerNameInput').value.trim();if(!n){alert('Zəhmət olmasa oyunçu adınızı daxil edin!');return}userData.name=n;saveUserData();showMainApp()}
+function showMainApp(){document.getElementById('login').classList.remove('active');document.getElementById('mainApp').style.display='block';document.getElementById('playerNameDisplay').textContent=userData.name;showSection('home')}
+function saveUserData(){localStorage.setItem('lingoquest_user',JSON.stringify(userData))}
+function loadUserData(){const s=localStorage.getItem('lingoquest_user');if(s){const p=JSON.parse(s);userData={...userData,...p};if(userData.achievements)userData.achievements.forEach(id=>{const a=achievements.find(x=>x.id===id);if(a)a.unlocked=true});if(userData.activityHistory)activityHistory=userData.activityHistory}}
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');const tabs={home:0,units:1,achievements:2};if(tabs[id]!==undefined)document.querySelectorAll('.tab-btn')[tabs[id]]?.classList.add('active')}
+function renderUnits(){const g=document.getElementById('unitsGrid');if(!g)return;g.innerHTML='';Object.keys(vocabularyData).forEach(k=>{const u=vocabularyData[k],n=unitNames[k]||`Unit ${k}`;const c=document.createElement('div');c.className='unit-card';c.innerHTML=`<div style="position:relative;z-index:2"><div class="unit-number">${k.toString().startsWith('p')?k.toUpperCase():k}</div><div class="unit-title">${n}</div><div style="color:rgba(255,255,255,0.6);font-size:0.9rem"><i class="fas fa-list"></i> ${u.length} söz</div></div>`;c.onclick=()=>selectUnit(k);g.appendChild(c)})}
+
+function selectUnitForMode(mode){selectedModeForUnit=mode;const mn=mode==='survival'?'Sağqalma':'Yazıçı',mi=mode==='survival'?'fa-fire':'fa-pen';let ub='';Object.keys(vocabularyData).forEach(k=>{const n=unitNames[k]||`Unit ${k}`,w=vocabularyData[k].length;ub+=`<button class="unit-select-btn" onclick="startModeWithUnit('${k}')">${k.toString().startsWith('p')?k.toUpperCase():'Unit '+k}<br><small style="opacity:0.7">${w} söz</small></button>`});const m=document.createElement('div');m.className='modal-overlay';m.id='unitSelectModal';m.innerHTML=`<div class="modal-content" style="max-width:600px"><h2><i class="fas ${mi}"></i> ${mn} - Unit Seç</h2><p>Hansı unitdən oynamaq istəyirsiniz?</p><div class="unit-select-grid">${ub}</div><button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()" style="width:100%"><i class="fas fa-times"></i> Ləğv et</button></div>`;document.body.appendChild(m)}
+function startModeWithUnit(k){document.getElementById('unitSelectModal')?.remove();currentUnit=k;if(selectedModeForUnit==='survival')startSurvivalWithUnit(k);else if(selectedModeForUnit==='writer')startWriterWithUnit(k)}
+
+function selectUnit(k){currentUnit=k;const n=unitNames[k]||`Unit ${k}`;const m=document.createElement('div');m.className='modal-overlay';m.innerHTML=`<div class="modal-content"><h2><i class="fas fa-book-open"></i> ${n}</h2><p>${vocabularyData[k].length} söz var. Nə etmək istəyirsiniz?</p><div style="display:grid;gap:15px;margin-top:20px"><button class="mode-btn" onclick="startUnitQuiz('${k}')"><i class="fas fa-bullseye"></i><div><span style="font-family:'Orbitron',sans-serif;font-weight:700;display:block;margin-bottom:3px">Quiz</span><span style="font-size:0.85rem;opacity:0.7">Biliklərinizi sınayın</span></div></button><button class="mode-btn" onclick="startLearn('${k}')"><i class="fas fa-graduation-cap"></i><div><span style="font-family:'Orbitron',sans-serif;font-weight:700;display:block;margin-bottom:3px">Öyrən</span><span style="font-size:0.85rem;opacity:0.7">Sözləri görüb öyrənin</span></div></button></div><button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()" style="margin-top:20px;width:100%"><i class="fas fa-times"></i> Bağla</button></div>`;document.body.appendChild(m)}
+
+function startLearn(k){document.querySelector('.modal-overlay')?.remove();const u=vocabularyData[k];document.getElementById('learnUnitTitle').textContent=unitNames[k]||`Unit ${k}`;const wl=document.getElementById('wordList');wl.innerHTML='';u.forEach((w,i)=>{const d=document.createElement('div');d.className='word-item';d.innerHTML=`<div><div class="word-en">${i+1}. ${w.en}</div><div style="font-size:1.1rem;color:rgba(255,255,255,0.8)">${w.az}</div></div><span style="font-size:0.8rem;color:var(--neon-purple);background:rgba(188,19,254,0.1);padding:3px 10px;border-radius:10px">${w.type}</span>`;wl.appendChild(d)});showSection('learn')}
+
+function startUnitQuiz(k){document.querySelector('.modal-overlay')?.remove();const u=vocabularyData[k];const m=document.createElement('div');m.className='modal-overlay';m.innerHTML=`<div class="modal-content"><h2><i class="fas fa-bullseye"></i> Quiz Parametrləri</h2><p>Hansı sözlərdən quiz başlamaq istəyirsiniz?</p><div style="background:rgba(0,0,0,0.3);border-radius:15px;padding:20px;margin-bottom:20px"><h4 style="margin-bottom:15px;color:var(--neon-blue)"><i class="fas fa-list-ol"></i> Aralıq seçin (1 - ${u.length})</h4><div style="display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap"><div><label>Başlanğıc</label><input type="number" id="startIndex" min="1" max="${u.length}" value="1" style="width:80px;padding:10px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.3);color:#fff;text-align:center"></div><span style="font-size:1.5rem">-</span><div><label>Son</label><input type="number" id="endIndex" min="1" max="${u.length}" value="${Math.min(10,u.length)}" style="width:80px;padding:10px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(0,0,0,0.3);color:#fff;text-align:center"></div></div></div><button class="btn-primary" onclick="confirmQuizRange('${k}')" style="width:100%;margin-bottom:10px"><i class="fas fa-play"></i> Başla</button><button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()" style="width:100%"><i class="fas fa-times"></i> Ləğv et</button></div>`;document.body.appendChild(m)}
+function confirmQuizRange(k){const s=parseInt(document.getElementById('startIndex').value),e=parseInt(document.getElementById('endIndex').value),u=vocabularyData[k];if(s<1||e>u.length||s>e){alert('Zəhmət olmasa düzgün aralıq daxil edin!');return}quizStartIndex=s-1;quizEndIndex=e;document.querySelector('.modal-overlay')?.remove();startQuiz('classic')}
+
+function startQuiz(mode){currentMode=mode;currentQuestion=0;score=0;streak=0;maxStreak=0;const words=vocabularyData[currentUnit].slice(quizStartIndex,quizEndIndex);questions=[];const shuffled=[...words].sort(()=>0.5-Math.random());shuffled.forEach(w=>{const isAz=Math.random()>0.5;const all=vocabularyData[currentUnit];const wrong=all.filter(x=>x.en!==w.en).sort(()=>0.5-Math.random()).slice(0,3).map(x=>isAz?x.en:x.az);const correct=isAz?w.en:w.az;questions.push({question:isAz?w.az:w.en,correct:correct,options:[correct,...wrong].sort(()=>0.5-Math.random()),type:isAz?'AZ → EN':'EN → AZ',data:w})});document.getElementById('totalQ').textContent=questions.length;showSection('quiz');loadQuestion()}
+function loadQuestion(){if(currentQuestion>=questions.length){endQuiz();return}const q=questions[currentQuestion];document.getElementById('currentQ').textContent=currentQuestion+1;document.getElementById('questionWord').textContent=q.question;document.getElementById('questionType').textContent=q.type;const g=document.getElementById('optionsGrid');g.innerHTML='';q.options.forEach(o=>{const b=document.createElement('button');b.className='option-btn';b.textContent=o;b.onclick=()=>checkAnswer(b,o,q.correct);g.appendChild(b)});timeLeft=15;startTimer()}
+function startTimer(){clearInterval(timer);const t=document.getElementById('timer');t.textContent=timeLeft;timer=setInterval(()=>{timeLeft--;t.textContent=timeLeft;if(timeLeft<=0){clearInterval(timer);handleTimeout()}},1000)}
+function handleTimeout(){document.querySelectorAll('.option-btn').forEach(b=>{b.classList.add('disabled');if(b.textContent===questions[currentQuestion].correct)b.classList.add('correct')});streak=0;updateStreak();setTimeout(()=>{currentQuestion++;loadQuestion()},1500)}
+function checkAnswer(btn,sel,corr){clearInterval(timer);document.querySelectorAll('.option-btn').forEach(b=>b.classList.add('disabled'));const isCorr=sel===corr;if(isCorr){btn.classList.add('correct');score++;streak++;if(streak>maxStreak)maxStreak=streak;let xp=10;if(streak>2)xp+=streak*2;showXP(xp);userData.xp+=xp;if(streak===10)unlockAchievement(2)}else{btn.classList.add('wrong');document.querySelectorAll('.option-btn').forEach(b=>{if(b.textContent===corr)b.classList.add('correct')});streak=0}updateStreak();updateUserStats();setTimeout(()=>{currentQuestion++;loadQuestion()},1500)}
+
+function startWriterWithUnit(k){currentUnit=k;currentMode='writer';currentQuestion=0;score=0;streak=0;maxStreak=0;const words=vocabularyData[currentUnit].slice(0,10);questions=[];words.forEach(w=>{const isAz=Math.random()>0.5;questions.push({question:isAz?w.az:w.en,correct:isAz?w.en:w.az,type:isAz?'AZ → EN (yazın)':'EN → AZ (yazın)',data:w})});document.getElementById('writerTotalQ').textContent=questions.length;document.getElementById('correctAnswerDisplay').classList.remove('show');showSection('writerQuiz');loadWriterQuestion()}
+function loadWriterQuestion(){if(currentQuestion>=questions.length){endQuiz();return}const q=questions[currentQuestion];document.getElementById('writerCurrentQ').textContent=currentQuestion+1;document.getElementById('writerQuestionWord').textContent=q.question;document.getElementById('writerQuestionType').textContent=q.type;document.getElementById('writerInput').value='';document.getElementById('writerInput').focus();document.getElementById('correctAnswerDisplay').classList.remove('show');timeLeft=20;startWriterTimer()}
+function startWriterTimer(){clearInterval(timer);const t=document.getElementById('writerTimer');t.textContent=timeLeft;timer=setInterval(()=>{timeLeft--;t.textContent=timeLeft;if(timeLeft<=0){clearInterval(timer);showCorrectAnswer()}},1000)}
+function checkWriterAnswer(){clearInterval(timer);const inp=document.getElementById('writerInput'),ans=inp.value.trim().toLowerCase(),corr=questions[currentQuestion].correct.toLowerCase();if(ans===corr){score++;streak++;if(streak>maxStreak)maxStreak=streak;showXP(15);userData.xp+=15;if(streak===10)unlockAchievement(2);setTimeout(()=>{currentQuestion++;loadWriterQuestion()},500)}else{streak=0;showCorrectAnswer()}updateStreak();updateUserStats()}
+function showCorrectAnswer(){const q=questions[currentQuestion];document.getElementById('correctAnswerText').textContent=q.correct;document.getElementById('correctAnswerDisplay').classList.add('show');setTimeout(()=>{currentQuestion++;loadWriterQuestion()},2500)}
+
+function startSurvivalWithUnit(k){currentUnit=k;currentMode='survival';currentQuestion=0;score=0;streak=0;const words=[...vocabularyData[currentUnit]].sort(()=>0.5-Math.random());questions=[];words.forEach(w=>{const isAz=Math.random()>0.5;const all=vocabularyData[currentUnit];const wrong=all.filter(x=>x.en!==w.en).sort(()=>0.5-Math.random()).slice(0,3).map(x=>isAz?x.en:x.az);questions.push({question:isAz?w.az:w.en,correct:isAz?w.en:w.az,options:[isAz?w.en:w.az,...wrong].sort(()=>0.5-Math.random()),type:isAz?'AZ → EN':'EN → AZ',data:w})});document.getElementById('totalQ').textContent='∞';showSection('quiz');loadSurvivalQuestion()}
+function loadSurvivalQuestion(){if(currentQuestion>=questions.length){endQuiz();return}const q=questions[currentQuestion];document.getElementById('currentQ').textContent=score+1;document.getElementById('questionWord').textContent=q.question;document.getElementById('questionType').textContent=q.type+' (Sağqalma)';const g=document.getElementById('optionsGrid');g.innerHTML='';q.options.forEach(o=>{const b=document.createElement('button');b.className='option-btn';b.textContent=o;b.onclick=()=>checkSurvivalAnswer(b,o,q.correct);g.appendChild(b)});timeLeft=10;startTimer()}
+function checkSurvivalAnswer(btn,sel,corr){clearInterval(timer);document.querySelectorAll('.option-btn').forEach(b=>b.classList.add('disabled'));const isCorr=sel===corr;if(isCorr){btn.classList.add('correct');score++;showXP(20);userData.xp+=20;if(score>=20)unlockAchievement(5);setTimeout(()=>{currentQuestion++;loadSurvivalQuestion()},800)}else{btn.classList.add('wrong');document.querySelectorAll('.option-btn').forEach(b=>{if(b.textContent===corr)b.classList.add('correct')});setTimeout(()=>endQuiz(),1500)}updateUserStats()}
+
+function endQuiz(){clearInterval(timer);showSection('results');const total=questions.length,wrong=total-score,pct=total>0?Math.round((score/total)*100):0;document.getElementById('finalScore').textContent=pct+'%';document.getElementById('correctCount').textContent=score;document.getElementById('wrongCount').textContent=wrong;const baseXP=score*10,bonusXP=maxStreak>3?maxStreak*5:0,totalXP=baseXP+bonusXP;document.getElementById('earnedXP').textContent='+'+totalXP;let stars='';if(pct>=90)stars='⭐⭐⭐';else if(pct>=70)stars='⭐⭐';else if(pct>=50)stars='⭐';else stars='💪';document.getElementById('resultStars').textContent=stars;let msg='';if(pct===100)msg='Mükəmməl! Əla iş! 🎉';else if(pct>=80)msg='Çox yaxşı! Belə davam et! 💪';else if(pct>=60)msg='Yaxşı! Biraz daha çalış! 📚';else msg='Əzmli ol! Təkrar sına! 🔄';document.getElementById('resultMessage').textContent=msg;if(userData.totalAnswered===0)unlockAchievement(1);if(currentMode==='writer'&&score>=10)unlockAchievement(3);userData.totalCorrect+=score;userData.totalAnswered+=total;addToActivity(currentUnit,pct,totalXP,score,wrong);saveUserData()}
+function restartQuiz(){if(currentMode==='writer')startWriterWithUnit(currentUnit);else if(currentMode==='survival')startSurvivalWithUnit(currentUnit);else startQuiz(currentMode)}
+function exitQuiz(){if(confirm('Quizi tərk etmək istədiyinizə əminsiniz?')){clearInterval(timer);showSection('units')}}
+
+function addToActivity(u,sc,xp,corr,wr){const act={id:Date.now(),unit:u,unitName:unitNames[u]||`Unit ${u}`,score:sc,xp:xp,correct:corr,wrong:wr,date:new Date().toISOString(),mode:currentMode};activityHistory.unshift(act);if(activityHistory.length>20)activityHistory=activityHistory.slice(0,20);userData.activityHistory=activityHistory;renderActivityHistory()}
+function deleteActivity(id,e){e.stopPropagation();if(confirm('Bu aktivliyi silmək istədiyinizə əminsiniz?')){activityHistory=activityHistory.filter(a=>a.id!==id);userData.activityHistory=activityHistory;saveUserData();renderActivityHistory()}}
+function renderActivityHistory(){const c=document.getElementById('activityList');if(!c)return;if(activityHistory.length===0){c.innerHTML='<p style="opacity:0.6;text-align:center">Hələ heç bir aktivlik yoxdur. İlk quizinizi başladın!</p>';return}c.innerHTML='';activityHistory.slice(0,10).forEach(a=>{const d=new Date(a.date),ds=d.toLocaleDateString('az-AZ'),mi=a.mode==='survival'?'🔥':a.mode==='writer'?'✍️':'🎯';const i=document.createElement('div');i.className='activity-item';i.onclick=()=>showActivityDetails(a.id);i.innerHTML=`<div class="activity-content"><div class="activity-left"><div style="font-weight:700;color:var(--neon-blue)">${mi} ${a.unitName}</div><div style="font-size:0.9rem;opacity:0.7"><i class="fas fa-calendar"></i> ${ds}</div></div><div class="activity-right"><div style="text-align:right"><div style="font-family:'Orbitron';color:var(--neon-green)">${a.score}%</div><div style="font-size:0.8rem;color:gold"><i class="fas fa-bolt"></i> +${a.xp} XP</div></div><button class="delete-btn" onclick="deleteActivity(${a.id},event)" title="Sil"><i class="fas fa-trash"></i></button></div></div>`;c.appendChild(i)})}
+function showActivityDetails(id){const a=activityHistory.find(x=>x.id===id);if(!a)return;const mn=a.mode==='survival'?'Sağqalma':a.mode==='writer'?'Yazıçı':'Klassik';alert(`📊 Quiz Nəticələri\n\nUnit: ${a.unitName}\nRejim: ${mn}\nTarix: ${new Date(a.date).toLocaleString('az-AZ')}\n\n✅ Düzgün: ${a.correct}\n❌ Səhv: ${a.wrong}\n📈 Nəticə: ${a.score}%\n⚡ Qazanılan XP: ${a.xp}`)}
+
+function unlockAchievement(id){const a=achievements.find(x=>x.id===id);if(a&&!a.unlocked){a.unlocked=true;if(!userData.achievements.includes(id))userData.achievements.push(id);const p=document.getElementById('achievement');document.getElementById('achievementText').textContent=a.name;p.querySelector('.achievement-icon').innerHTML=`<i class="fas ${a.icon}"></i>`;p.classList.add('show');setTimeout(()=>p.classList.remove('show'),4000);renderAchievements();saveUserData()}}
+function renderAchievements(){const g=document.getElementById('achievementsGrid');if(!g)return;g.innerHTML='';achievements.forEach(a=>{const c=document.createElement('div');c.className=`achievement-card ${a.unlocked?'unlocked':''}`;c.innerHTML=`<div style="font-size:3rem;margin-bottom:15px;color:${a.unlocked?'gold':'rgba(255,255,255,0.3)'}"><i class="fas ${a.icon}"></i></div><h3 style="font-family:'Orbitron',sans-serif;margin-bottom:10px;${a.unlocked?'':'color:rgba(255,255,255,0.5)'}">${a.name}</h3><p style="opacity:0.7;font-size:0.9rem">${a.desc}</p><div style="margin-top:15px;font-weight:700;color:${a.unlocked?'var(--neon-green)':'rgba(255,255,255,0.4)'}">${a.unlocked?'<i class="fas fa-check-circle"></i> Açıldı':'<i class="fas fa-lock"></i> Kilidli'}</div>`;g.appendChild(c)})}
+
+function updateUserStats(){const l=document.getElementById('userLevel'),x=document.getElementById('userXP');if(l)l.textContent=userData.level;if(x)x.textContent=userData.xp.toLocaleString();const req=userData.level*500;if(userData.xp>=req){userData.level++;userData.xp-=req;showXP('LEVEL UP!');updateUserStats()}}
+function updateStreak(){const c=document.getElementById('streakContainer'),n=document.getElementById('streakCount');if(streak>1){c.classList.add('show');n.textContent=streak}else c.classList.remove('show')}
+function showXP(a){const t=document.getElementById('xpToast');t.textContent=typeof a==='number'?`+${a} XP`:a;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+</script>
+</body>
+</html>
